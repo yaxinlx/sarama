@@ -9,6 +9,9 @@ import (
 	"github.com/eapache/queue"
 )
 
+import "github.com/asiainfoLDP/datahub_commons/log"
+var L = log.DefaultLogger()
+
 // AsyncProducer publishes Kafka messages using a non-blocking API. It routes messages
 // to the correct broker for the provided topic-partition, refreshing metadata as appropriate,
 // and parses responses for errors. You must read from the Errors() channel or the
@@ -403,6 +406,10 @@ func (pp *partitionProducer) dispatch() {
 	}
 
 	for msg := range pp.input {
+		
+b, e := msg.Value.Encode()
+L.Infof("msg = topic = %s, value = %s, error: %s", msg.Topic, string(b), e.Error())
+		
 		if msg.retries > pp.highWatermark {
 			// a new, higher, retry level; handle it and then back off
 			pp.newHighWatermark(msg.retries)
