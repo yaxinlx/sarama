@@ -408,7 +408,11 @@ func (pp *partitionProducer) dispatch() {
 	for msg := range pp.input {
 		
 b, e := msg.Value.Encode()
-L.Infof("msg = topic = %s, value = %s, error: %s", msg.Topic, string(b), e.Error())
+estr := ""
+if e != nil {
+	estr = e.Error()
+}
+L.Infof("msg = topic = %s, value = %s, error: %s", msg.Topic, string(b), estr)
 		
 		if msg.retries > pp.highWatermark {
 			// a new, higher, retry level; handle it and then back off
